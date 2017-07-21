@@ -1,7 +1,7 @@
 """" This implementation is largely based on and adapted from:
  https://github.com/sskhandle/Iterative-Classification """
-from ica.utils import load_data, pick_aggregator, create_map, build_graph
-from ica.classifiers import LocalClassifier, RelationalClassifier, ICA
+from utils import load_data, pick_aggregator, create_map, build_graph
+from classifiers import LocalClassifier, RelationalClassifier, ICA
 
 from scipy.stats import sem
 
@@ -60,5 +60,3 @@ for run in range(args.num_trials):
     print 'Run ' + str(run) + ': \t\t' + str(ica_accuracy) + ', Elapsed time: \t\t' + str(time.time() - t_begin)
 
 print("Final test results: {:.5f} +/- {:.5f} (sem)".format(np.mean(ica_accuracies), sem(ica_accuracies)))
-
-

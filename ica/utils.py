@@ -5,8 +5,8 @@ import cPickle as pkl
 import numpy as np
 import scipy.sparse as sp
 import os.path
-from ica.graph import UndirectedGraph, Node, Edge
-from ica.aggregators import Count, Prop
+from graph import UndirectedGraph, Node, Edge
+from aggregators import Count, Prop
 
 
 def build_graph(adj, features, labels):
