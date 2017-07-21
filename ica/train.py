@@ -1,5 +1,6 @@
 """" This implementation is largely based on and adapted from:
  https://github.com/sskhandle/Iterative-Classification """
+from __future__ import print_function
 from utils import load_data, pick_aggregator, create_map, build_graph
 from classifiers import LocalClassifier, RelationalClassifier, ICA
 
@@ -11,7 +12,7 @@ import argparse
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-dataset', default='cora', help='Dataset string.')
+parser.add_argument('-dataset', default='dblp-feat', help='Dataset string.')
 parser.add_argument('-classifier', default='sklearn.linear_model.LogisticRegression',
                     help='Underlying classifier.')
 parser.add_argument('-seed', type=int, default=42, help='Random seed.')
@@ -27,8 +28,10 @@ args = parser.parse_args()
 np.random.seed(args.seed)
 
 # load data
-adj, features, labels, idx_train, idx_val, idx_test = load_data(args.dataset)
+adj, types, features, labels, idx_train, idx_val, idx_test = load_data(args.dataset)
 graph, domain_labels = build_graph(adj, features, labels)
+
+print('Domain labels:\n', domain_labels)
 
 # train / test splits
 train = idx_train
@@ -47,7 +50,7 @@ for run in range(args.num_trials):
     # random ordering
     np.random.shuffle(eval_idx)
 
-    y_true = [graph.node_list[t].label for t in test]
+    y_true = [graph.node_list[t].label for t in test]  # ground truth for test set
     local_clf = LocalClassifier(args.classifier)
     agg = pick_aggregator(args.aggregate, domain_labels)
     relational_clf = RelationalClassifier(args.classifier, agg)
@@ -57,6 +60,6 @@ for run in range(args.num_trials):
     ica_predict = ica.predict(graph, eval_idx, test, conditional_node_to_label_map)
     ica_accuracy = accuracy_score(y_true, ica_predict)
     ica_accuracies.append(ica_accuracy)
-    print 'Run ' + str(run) + ': \t\t' + str(ica_accuracy) + ', Elapsed time: \t\t' + str(time.time() - t_begin)
+    print('Run ' + str(run) + ': \t\t' + str(ica_accuracy) + ', Elapsed time: \t\t' + str(time.time() - t_begin))
 
 print("Final test results: {:.5f} +/- {:.5f} (sem)".format(np.mean(ica_accuracies), sem(ica_accuracies)))
